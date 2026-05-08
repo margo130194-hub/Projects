@@ -7,70 +7,87 @@
 
 import UIKit
 
- class ViewController: UIViewController {
+class ViewController: UIViewController {
     
     // MARK: - Subviews
-     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
-     private let page1 = OnboardingViewController()
-     private let page2 = OnboardingViewController()
-     private let page3 = OnboardingViewController()
-     private let page4 = OnboardingViewController()
-     lazy var pages:[UIViewController] = [page1, page2, page3, page4]
-     private let skipButton = UIButton(type: .system)
-     
+    private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    private let page1 = OnboardingViewController()
+    private let page2 = OnboardingViewController()
+    private let page3 = OnboardingViewController()
+    private let page4 = OnboardingViewController()
+    lazy var pages:[UIViewController] = [page1, page2, page3, page4]
+    private let skipButton = UIButton(type: .system)
+    private let imageBackground = UIImageView()
+    
     
     // MARK: - Lyfecycles
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupViewProperties()
         setupPages()
         setupSubview()
         setupConstraints()
     }
-     
     
-     private func setupPages(){
-         addChild(pageVC)
-         view.addSubview(pageVC.view)
-         pageVC.didMove(toParent: self)
-         
-         pageVC.dataSource = self
-         pageVC.delegate = self
-         
-         if let firstPage = pages.first{
-             pageVC.setViewControllers([firstPage], direction: .forward, animated: true)
-         }
-     }
     
-     private func setupSubview(){
-         
-         skipButton.setTitle("Skip", for: .normal)
-         skipButton.setTitleColor(.black, for: .normal)
-         skipButton.translatesAutoresizingMaskIntoConstraints = false
-         skipButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
-         skipButton.addTarget(self, action: #selector(skipTapped), for: .touchUpInside)
-         view.addSubview(skipButton)
-         
-         page1.setData(imageName: "smartBanking", title: "Smart Banking for Your Future.", description: "Manage your money, track expenses, and grow your savings—all in one place.")
-         page2.setData(imageName: "security", title: "Your Security is Our Priority.", description: "Just enter your phone number to get started. Your privacy is protected with top-tier encryption every step of the way.")
-         page3.setData(imageName: "cashback", title: "Get Rewarded Every Day.", description: "Earn up to 10% cashback on your favorite categories and enjoy exclusive partner discounts.")
-         page4.setData(imageName: "ready", title: " Ready to Start?", description: "Log in with your phone number or open a new account in under 2 minutes.")
-         page4.isFinalPage = true
-     }
-     
-     private func setupConstraints() {
-         NSLayoutConstraint.activate([
+    private func setupPages(){
+        addChild(pageVC)
+        view.addSubview(pageVC.view)
+        pageVC.didMove(toParent: self)
+        
+        pageVC.dataSource = self
+        pageVC.delegate = self
+        
+        if let firstPage = pages.first{
+            pageVC.setViewControllers([firstPage], direction: .forward, animated: true)
+        }
+    }
+    
+    private func setupViewProperties() {
+        imageBackground.image = UIImage(named: "space")
+        imageBackground.alpha = 0.4
+        imageBackground.contentMode = .scaleToFill
+        imageBackground.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageBackground)
+    }
+    
+    private func setupSubview(){
+        let appearance = UIPageControl.appearance(whenContainedInInstancesOf: [UIPageViewController.self])
+        appearance.currentPageIndicatorTintColor = .white
+        appearance.pageIndicatorTintColor = .white.withAlphaComponent(0.5)
+        
+        skipButton.setTitle("Пропустить", for: .normal)
+        skipButton.setTitleColor(.white.withAlphaComponent(0.7), for: .normal)
+        skipButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        skipButton.titleLabel?.font = UIFont(name: "FunnelDisplay-Bold", size: 15)
+        skipButton.addTarget(self, action: #selector(skipTapped), for: .touchUpInside)
+        view.addSubview(skipButton)
+        
+        page1.setData(imageName: "smartBanking", title: "Интеллектуальные решения для вашего будущего.", description: "Управляйте капиталом, следите за расходами и приумножайте сбережения — всё в одном приложении.")
+        page2.setData(imageName: "security", title: "Ваша безопасность — наш главный приоритет.", description: "Просто введите ваш номер телефона, чтобы начать. Ваша конфиденциальность защищена шифрованием высшего уровня на каждом этапе.")
+        page3.setData(imageName: "cashback", title: "Получайте выгоду каждый день.", description: "Получайте кэшбэк до 10% в любимых категориях и пользуйтесь эксклюзивными скидками от партнеров.")
+        page4.setData(imageName: "ready", title: " Готовы начать?", description: "Авторизуйтесь по номеру телефона или создайте новый аккаунт всего за пару минут.")
+        page4.isFinalPage = true
+    }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
             skipButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            skipButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            skipButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            skipButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
             skipButton.heightAnchor.constraint(equalToConstant: 60)
-         ])
-     }
-     
-     @objc private func skipTapped(){
-         let mainVC = LoginViewController()
-         mainVC.modalPresentationStyle = .fullScreen
-         present(mainVC, animated: true)
-     }
+        ])
+    }
+    
+    @objc private func skipTapped(){
+        let mainVC = LoginViewController()
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            UIView.transition(with: window, duration: 0.3,options: .transitionCrossDissolve){
+                window.rootViewController = mainVC
+            }
+        }
+    }
 }
 
 extension ViewController: UIPageViewControllerDataSource{

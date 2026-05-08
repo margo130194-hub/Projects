@@ -1,27 +1,26 @@
 //
-//  ViewController.swift
+//  SignUpViewControllert.swift
 //  GravityBank
 //
-//  Created by Margarita Matsonko on 02/04/2026.
+//  Created by Margarita Matsonko on 03/05/2026.
 //
 
-import UIKit
 
-final class LoginViewController: UIViewController {
+import UIKit
+import Security
+
+final class SignUpViewController: UIViewController {
     
     // MARK: - Subviews
     private let keychainService = "co.margarita.GravityBank"
     private let number = UITextField()
     private let password = UITextField()
+    private let name = UITextField()
     private let label = UILabel()
-    private let logIn = UIButton(type: .system)
-    private let signUpLabel = UILabel()
     private let signUp = UIButton(type: .system)
-    private let forgotPassword = UIButton(type: .system)
     private let image = UIImageView()
     private let imageBackground = UIImageView()
     private let stackView = UIStackView()
-    private let horizontalStackView = UIStackView()
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
@@ -70,13 +69,13 @@ final class LoginViewController: UIViewController {
         contentView.addSubview(image)
         
         label.text = "Gravity Bank"
-        label.font = UIFont(name: "FunnelDisplay-Bold", size: 40)
+        label.font = UIFont(name: "FunnelDisplay-Bold", size: 45)
         label.textColor = .white
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(label)
         
-        [number, password].forEach{
+        [number, password, name].forEach{
             $0.borderStyle = .roundedRect
             $0.clearButtonMode = .whileEditing
             $0.delegate = self
@@ -95,6 +94,9 @@ final class LoginViewController: UIViewController {
         number.attributedPlaceholder = NSAttributedString(
             string: "Номер телефона: 123 456 789",
             attributes: placeholderAttributes)
+        name.attributedPlaceholder = NSAttributedString(
+            string: "Имя пользователя",
+            attributes: placeholderAttributes)
         password.isSecureTextEntry = true
         addButton(textField: password, iconName: "eye.slash")
         
@@ -103,52 +105,25 @@ final class LoginViewController: UIViewController {
         stackView.alignment = .fill
         stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.addArrangedSubview(name)
         stackView.addArrangedSubview(number)
         stackView.addArrangedSubview(password)
         contentView.addSubview(stackView)
         
-        logIn.setTitle("Войти", for: .normal)
-        logIn.setTitleColor(.white, for: .normal)
-        logIn.titleLabel?.font = UIFont(name: "FunnelDisplay-Bold", size: 18)
-        logIn.backgroundColor = .black
-        logIn.layer.cornerRadius = 10
-        logIn.layer.borderColor = UIColor.white.cgColor
-        logIn.layer.borderWidth = 1
-        logIn.layer.shadowColor = UIColor.white.withAlphaComponent(1).cgColor
-        logIn.layer.shadowOffset = CGSize(width: 0, height: 2)
-        logIn.layer.shadowOpacity = 0.8
-        logIn.layer.shadowRadius = 3
-        logIn.translatesAutoresizingMaskIntoConstraints = false
-        logIn.addTarget(self, action: #selector(logInTapped), for: .touchUpInside)
-        contentView.addSubview(logIn)
-        
-        signUpLabel.text = "Создать новый аккаунт?"
-        signUpLabel.textColor = .white
-        signUpLabel.font = UIFont(name: "FunnelDisplay-Medium", size: 18)
-        signUpLabel.textAlignment = .center
-        signUpLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        signUp.setTitle("Регистрация", for: .normal)
+        signUp.setTitle("Зарегистрироваться", for: .normal)
         signUp.setTitleColor(.white, for: .normal)
-        signUp.titleLabel?.font = UIFont(name: "FunnelDisplay-Bold", size: 18)
+        signUp.titleLabel?.font = UIFont(name: "FunnelDisplay-Bold", size: 20)
+        signUp.backgroundColor = .black
+        signUp.layer.cornerRadius = 10
+        signUp.layer.borderColor = UIColor.white.cgColor
+        signUp.layer.borderWidth = 1
+        signUp.layer.shadowColor = UIColor.white.withAlphaComponent(1).cgColor
+        signUp.layer.shadowOffset = CGSize(width: 0, height: 2)
+        signUp.layer.shadowOpacity = 0.8
+        signUp.layer.shadowRadius = 3
         signUp.translatesAutoresizingMaskIntoConstraints = false
-        signUp.addTarget(self, action: #selector(signUpAction), for: .touchUpInside)
-        
-        horizontalStackView.axis = .horizontal
-        horizontalStackView.spacing = 5
-        horizontalStackView.alignment = .center
-        horizontalStackView.distribution = .fill
-        horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-        [signUpLabel, signUp].forEach{
-            horizontalStackView.addArrangedSubview($0)
-        }
-        contentView.addSubview(horizontalStackView)
-        
-        forgotPassword.setTitle("Забыли пароль?", for: .normal)
-        forgotPassword.setTitleColor(.white, for: .normal)
-        forgotPassword.titleLabel?.font = UIFont(name: "FunnelDisplay-Regular", size: 15)
-        forgotPassword.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(forgotPassword)
+        signUp.addTarget(self, action: #selector(newAccountAction), for: .touchUpInside)
+        contentView.addSubview(signUp)
     }
     
     private func setupConstraints() {
@@ -169,29 +144,24 @@ final class LoginViewController: UIViewController {
             imageBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             imageBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            image.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 5),
+            image.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 10),
             image.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             image.widthAnchor.constraint(equalToConstant: 130),
             image.heightAnchor.constraint(equalToConstant: 130),
             
-            label.topAnchor.constraint(equalTo: image.bottomAnchor, constant: 10),
+            label.topAnchor.constraint(equalTo: image.bottomAnchor, constant: 15),
             label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            stackView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 50),
+            stackView.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 55),
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -40),
             
-            forgotPassword.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 10),
-            forgotPassword.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -40),
+            signUp.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 30),
+            signUp.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
+            signUp.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50),
+            signUp.heightAnchor.constraint(equalToConstant: 50),
+            signUp.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
             
-            logIn.topAnchor.constraint(equalTo: forgotPassword.bottomAnchor, constant: 25),
-            logIn.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
-            logIn.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50),
-            logIn.heightAnchor.constraint(equalToConstant: 50),
-            
-            horizontalStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            horizontalStackView.topAnchor.constraint(equalTo: logIn.bottomAnchor, constant: 30),
-            horizontalStackView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -250,67 +220,69 @@ final class LoginViewController: UIViewController {
         }
     }
     
-    @objc private func logInTapped(){
-        let number = number.text ?? ""
+    @objc private func newAccountAction(){
+        print("кнопка нажата")
         let password = password.text ?? ""
+        let number = number.text ?? ""
+        let name = name.text ?? ""
+        let specificKey = "userName \(number)"
+        guard !name.isEmpty else {
+            alert(title: "⚠️", message: "Введите имя", success: false)
+            return
+        }
         guard !number.isEmpty else {
-            alert(title: "⚠️", message: "Введите номер")
+            alert(title: "⚠️", message: "Введите номер", success: false)
             return
         }
         guard !password.isEmpty else {
-            alert(title: "⚠️", message: "Введите пароль")
+            alert(title: "⚠️", message: "Введите пароль", success: false)
             return
         }
-        let query: [String: Any] = [
+        guard let passwordData = password.data(using: .utf8) else {return}
+        
+        let deleteQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: number
+        ]
+        SecItemDelete(deleteQuery as CFDictionary)
+        print("delete")
+        let addQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: number,
-            kSecReturnData as String:  true,
-            kSecMatchLimit as String:  kSecMatchLimitOne
+            kSecValueData as String: passwordData
         ]
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        switch status {
-        case errSecSuccess:
-            if let data = result as? Data,
-               let savedPassword = String(data: data, encoding: .utf8) {
-                if savedPassword == password{
-                    UserDefaults.standard.set(number, forKey: "userNumber")
-                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let window = windowScene.windows.first {
-                        UIView.transition(with: window, duration: 0.3,options: .transitionCrossDissolve){
-                            window.rootViewController = TabBarViewController()
-                        }
+        print("add")
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
+        print("проверка статуса")
+        if status == errSecSuccess {
+            print("\(status)")
+            UserDefaults.standard.set(name, forKey: specificKey)
+            alert(title: "Ура", message: "Данные успешно сохранены. Теперь можно войти в приложение", success: true)
+        } else {
+            print("\(status)")
+            alert(title: "Упс", message: "Ошибка сохранения. Попробуйте еще раз", success: false)
+        }
+    }
+    
+    private func alert(title: String, message: String, success: Bool){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default){_ in
+            if success{
+                let mainVC = LoginViewController()
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first {
+                    UIView.transition(with: window, duration: 0.3,options: .transitionCrossDissolve){
+                        window.rootViewController = mainVC
                     }
                 }
-            } else {
-                alert(title: "⚠️", message: "Неверный пароль!")
             }
-        case errSecItemNotFound:
-            alert(title: "⚠️", message: "Пользователь не найден. Пожалуйста зарегистрируйтесь")
-        default:
-            alert(title: "⚠️", message: "Произошла ошибка. Попробуйте еще раз")
-        }
-    }
-    
-    private func alert(title: String, message: String){
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        })
         self.present(alert, animated: true)
     }
-    
-    @objc private func signUpAction(){
-        let mainVC = SignUpViewController()
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            UIView.transition(with: window, duration: 0.3,options: .transitionCrossDissolve){
-                window.rootViewController = mainVC
-            }
-        }
-    }
 }
-
-extension LoginViewController: UITextFieldDelegate{
+extension SignUpViewController: UITextFieldDelegate{
     
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -324,5 +296,5 @@ extension LoginViewController: UITextFieldDelegate{
 }
 
 //#Preview{
-//    LoginViewController()
+//    SignUpViewController()
 //}
