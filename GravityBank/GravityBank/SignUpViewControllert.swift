@@ -225,12 +225,17 @@ final class SignUpViewController: UIViewController {
         let password = password.text ?? ""
         let number = number.text ?? ""
         let name = name.text ?? ""
-        let specificKey = "userName \(number)"
+        let cleanNumber = number.filter{$0.isNumber}
+        guard cleanNumber.count == 9 else {
+            alert(title: "⚠️", message: "Номер телефона некорректный", success: false)
+            return
+        }
+        let specificKey = "userName \(cleanNumber)"
         guard !name.isEmpty else {
             alert(title: "⚠️", message: "Введите имя", success: false)
             return
         }
-        guard !number.isEmpty else {
+        guard !cleanNumber.isEmpty else {
             alert(title: "⚠️", message: "Введите номер", success: false)
             return
         }
@@ -243,14 +248,14 @@ final class SignUpViewController: UIViewController {
         let deleteQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: number
+            kSecAttrAccount as String: cleanNumber
         ]
         SecItemDelete(deleteQuery as CFDictionary)
         print("delete")
         let addQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: number,
+            kSecAttrAccount as String: cleanNumber,
             kSecValueData as String: passwordData
         ]
         print("add")
