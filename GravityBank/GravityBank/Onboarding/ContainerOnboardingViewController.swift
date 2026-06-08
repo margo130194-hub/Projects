@@ -7,7 +7,19 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ContainerOnboardingViewController: UIViewController {
+    
+    static func build() -> UIViewController{
+        let vc = ContainerOnboardingViewController()
+        let router = ContainerOnboardingRouter()
+        
+        vc.router = router
+        router.viewController = vc
+        
+        return vc
+    }
+    
+    var router: ContainerOnboardingRouterProtocol?
     
     // MARK: - Subviews
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
@@ -19,8 +31,7 @@ class ViewController: UIViewController {
     private let skipButton = UIButton(type: .system)
     private let imageBackground = UIImageView()
     
-    
-    // MARK: - Lyfecycles
+    // MARK: - Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewProperties()
@@ -28,7 +39,6 @@ class ViewController: UIViewController {
         setupSubview()
         setupConstraints()
     }
-    
     
     private func setupPages(){
         addChild(pageVC)
@@ -43,9 +53,10 @@ class ViewController: UIViewController {
         }
     }
     
+    //    MARK: - Layout
     private func setupViewProperties() {
         imageBackground.image = UIImage(named: "space")
-        imageBackground.alpha = 0.4
+        imageBackground.alpha = 0.6
         imageBackground.contentMode = .scaleToFill
         imageBackground.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(imageBackground)
@@ -69,28 +80,38 @@ class ViewController: UIViewController {
         page3.setData(imageName: "cashback", title: "Получайте выгоду каждый день.", description: "Получайте кэшбэк до 10% в любимых категориях и пользуйтесь эксклюзивными скидками от партнеров.")
         page4.setData(imageName: "ready", title: " Готовы начать?", description: "Авторизуйтесь по номеру телефона или создайте новый аккаунт всего за пару минут.")
         page4.isFinalPage = true
+        page4.delegate = self
     }
     
+    //    MARK: - Conctraints
     private func setupConstraints() {
         NSLayoutConstraint.activate([
+            imageBackground.topAnchor.constraint(equalTo: view.topAnchor),
+            imageBackground.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            imageBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
             skipButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
             skipButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
             skipButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
+    //    MARK: - Actions
     @objc private func skipTapped(){
-        let mainVC = LoginViewController()
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            UIView.transition(with: window, duration: 0.3,options: .transitionCrossDissolve){
-                window.rootViewController = mainVC
-            }
-        }
+        router?.goToLogin()
     }
 }
 
-extension ViewController: UIPageViewControllerDataSource{
+//    MARK: - Extensions
+
+extension ContainerOnboardingViewController: OnboardingViewControllerDelegate{
+    func finishOnboarding() {
+        router?.goToLogin()
+    }
+}
+
+extension ContainerOnboardingViewController: UIPageViewControllerDataSource{
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = pages.firstIndex(of: viewController) else {return nil}
@@ -114,7 +135,7 @@ extension ViewController: UIPageViewControllerDataSource{
     }
 }
 
-extension ViewController: UIPageViewControllerDelegate{
+extension ContainerOnboardingViewController: UIPageViewControllerDelegate{
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         guard completed else {return}
         if let currentVC = pageViewController.viewControllers?.first,

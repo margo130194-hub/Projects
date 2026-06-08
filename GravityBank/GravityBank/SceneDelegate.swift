@@ -17,13 +17,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.windowScene = windowScene
         
-//                let hasSeenOnbording = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
-//                if hasSeenOnbording{
-//                    window?.rootViewController = LoginViewController()
-//                } else {
-//                    window?.rootViewController = ViewController()
-//                }
-        window?.rootViewController = ViewController()
+        let hasSeenOnbording = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
+        if hasSeenOnbording{
+            window?.rootViewController = LoginViewController.build()
+        } else {
+            window?.rootViewController = ContainerOnboardingViewController.build()
+        }
+        let savedTheme = UserDefaults.standard.integer(forKey: "selectedTheme")
+        if savedTheme == 0 {
+            window?.overrideUserInterfaceStyle = .unspecified
+        } else {
+            window?.overrideUserInterfaceStyle = .dark
+        }
+        //        window?.rootViewController = TabBarViewController()
         window?.makeKeyAndVisible()
     }
 }

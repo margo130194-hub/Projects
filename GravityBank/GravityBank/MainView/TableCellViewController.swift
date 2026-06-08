@@ -12,12 +12,15 @@ class TableCell: UITableViewCell {
     static var reuseIdentifier: String {
         return String(describing: self)
     }
-    private let conteinerView = UIView()
+    //    MARK: - Labels
     private let name = UILabel()
     private let currency = UILabel()
     private let percent = UILabel()
     private let minimal = UILabel()
     private let depositTerm = UILabel()
+    
+    //   MARK: - View & Stack
+    private let conteinerView = UIView()
     private let stackView = UIStackView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -45,10 +48,12 @@ class TableCell: UITableViewCell {
     }
     
     private  func setupSubview(){
-        conteinerView.backgroundColor = .black.withAlphaComponent(0.7)
+        
+        //   MARK: - View & Stack
+        conteinerView.backgroundColor = UIColor(named: "blue")?.withAlphaComponent(0.7)
         conteinerView.layer.borderWidth = 0.5
         conteinerView.layer.cornerRadius = 10
-        conteinerView.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+        conteinerView.layer.borderColor = UIColor(named: "GravityColor")?.withAlphaComponent(0.5).cgColor
         conteinerView.layer.shadowColor = UIColor.white.cgColor
         conteinerView.layer.shadowOffset = .zero
         conteinerView.layer.shadowRadius = 3
@@ -56,6 +61,14 @@ class TableCell: UITableViewCell {
         conteinerView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(conteinerView)
         
+        stackView.axis = .vertical
+        stackView.spacing = 5
+        stackView.alignment = .leading
+        stackView.distribution = .fillEqually
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        conteinerView.addSubview(stackView)
+        
+        //    MARK: - Labels
         name.font = UIFont(name: "FunnelDisplay-Bold", size: 25)
         name.textColor = .white
         name.numberOfLines = 0
@@ -71,14 +84,8 @@ class TableCell: UITableViewCell {
             stackView.addArrangedSubview($0)
         }
         
-        stackView.axis = .vertical
-        stackView.spacing = 5
-        stackView.alignment = .leading
-        stackView.distribution = .fillEqually
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        conteinerView.addSubview(stackView)
     }
-    
+    //    MARK: - Conctraints
     private func setupConctraints(){
         NSLayoutConstraint.activate([
             conteinerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),

@@ -11,8 +11,23 @@ import Security
 
 final class SignUpViewController: UIViewController {
     
+    static func build() -> UIViewController{
+        let vc = SignUpViewController()
+        let presenter = SignUpPresenter()
+        let router = SignUpRouter()
+        
+        vc.presenter = presenter
+        presenter.router = router
+        presenter.view = vc
+        router.viewController = vc
+        
+        return vc
+    }
+    
+    var presenter: SignUpPresenterProtocol?
+    
     // MARK: - Subviews
-    private let keychainService = "co.margarita.GravityBank"
+    
     private let number = UITextField()
     private let password = UITextField()
     private let name = UITextField()
@@ -24,7 +39,7 @@ final class SignUpViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    // MARK: - Lyfecycles
+    // MARK: - Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNotifications()
@@ -221,74 +236,25 @@ final class SignUpViewController: UIViewController {
     }
     
     @objc private func newAccountAction(){
-        print("кнопка нажата")
         let password = password.text ?? ""
         let number = number.text ?? ""
         let name = name.text ?? ""
-        let cleanNumber = number.filter{$0.isNumber}
-        guard cleanNumber.count == 9 else {
-            alert(title: "⚠️", message: "Номер телефона некорректный", success: false)
-            return
-        }
-        let specificKey = "userName \(cleanNumber)"
-        guard !name.isEmpty else {
-            alert(title: "⚠️", message: "Введите имя", success: false)
-            return
-        }
-        guard !cleanNumber.isEmpty else {
-            alert(title: "⚠️", message: "Введите номер", success: false)
-            return
-        }
-        guard !password.isEmpty else {
-            alert(title: "⚠️", message: "Введите пароль", success: false)
-            return
-        }
-        guard let passwordData = password.data(using: .utf8) else {return}
         
-        let deleteQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: cleanNumber
-        ]
-        SecItemDelete(deleteQuery as CFDictionary)
-        print("delete")
-        let addQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: cleanNumber,
-            kSecValueData as String: passwordData
-        ]
-        print("add")
-        let status = SecItemAdd(addQuery as CFDictionary, nil)
-        print("проверка статуса")
-        if status == errSecSuccess {
-            print("\(status)")
-            UserDefaults.standard.set(name, forKey: specificKey)
-            alert(title: "Ура", message: "Данные успешно сохранены. Теперь можно войти в приложение", success: true)
-        } else {
-            print("\(status)")
-            alert(title: "Упс", message: "Ошибка сохранения. Попробуйте еще раз", success: false)
-        }
+        presenter?.newAccount(number: number, password: password, name: name)
     }
     
     private func alert(title: String, message: String, success: Bool){
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default){_ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default){[weak self] _ in
             if success{
-                let mainVC = LoginViewController()
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first {
-                    UIView.transition(with: window, duration: 0.3,options: .transitionCrossDissolve){
-                        window.rootViewController = mainVC
-                    }
-                }
+                self?.presenter?.goToLogin()
             }
         })
         self.present(alert, animated: true)
     }
 }
+
 extension SignUpViewController: UITextFieldDelegate{
-    
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.layer.borderWidth = 3
@@ -297,6 +263,12 @@ extension SignUpViewController: UITextFieldDelegate{
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         textField.layer.borderWidth = 0
+    }
+}
+
+extension SignUpViewController: SignUpViewProtocol{
+    func showAlert(title: String, message: String, isSuccess: Bool) {
+        self.alert(title: title, message: message, success: isSuccess)
     }
 }
 

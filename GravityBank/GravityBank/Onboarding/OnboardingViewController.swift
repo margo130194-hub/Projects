@@ -6,44 +6,47 @@
 //
 
 import UIKit
+protocol OnboardingViewControllerDelegate: AnyObject{
+    func finishOnboarding()
+}
 
- class OnboardingViewController: UIViewController {
+class OnboardingViewController: UIViewController {
+    
+    weak var delegate: OnboardingViewControllerDelegate?
     
     // MARK: - Subviews
     private let image = UIImageView()
-     private let imageBackground = UIImageView()
+    private let imageBackground = UIImageView()
+    
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
+    
     private var pageData:(imageName: String, title: String, description: String)?
     private let startButton = UIButton(type: .system)
     var isFinalPage: Bool = false
-     
-    // MARK: - Lyfecycles
+    
+    // MARK: - Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewProperties()
         setupSubviews()
         setupConstraints()
         updateData()
-      
+        
     }
-     
-     override func viewWillAppear(_ animated: Bool){
-         super.viewWillAppear(animated)
-         if isFinalPage{
-             startButton.isHidden = false
-         } else {
-             startButton.isHidden = true
-         }
-     }
+    
+    override func viewWillAppear(_ animated: Bool){
+        super.viewWillAppear(animated)
+        if isFinalPage{
+            startButton.isHidden = false
+        } else {
+            startButton.isHidden = true
+        }
+    }
     
     // MARK: - Layout
     private func setupViewProperties() {
-        imageBackground.image = UIImage(named: "space")
-        imageBackground.alpha = 0.4
-        imageBackground.contentMode = .scaleToFill
-        imageBackground.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageBackground)
+        view.backgroundColor = .clear
     }
     
     private func setupSubviews() {
@@ -57,7 +60,7 @@ import UIKit
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         descriptionLabel.font = UIFont(name: "FunnelDisplay-Medium", size: 20)
-        descriptionLabel.textColor = .white
+        descriptionLabel.textColor = UIColor(named: "GravityColor")
         descriptionLabel.textAlignment = .center
         descriptionLabel.numberOfLines = 0
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -75,14 +78,15 @@ import UIKit
         startButton.layer.shadowRadius = 3
         startButton.translatesAutoresizingMaskIntoConstraints = false
         startButton.addTarget(self, action: #selector(startTapped), for: .touchUpInside)
-       
+        
         view.addSubview(startButton)
         view.addSubview(image)
         view.addSubview(titleLabel)
         view.addSubview(descriptionLabel)
-       
+        
     }
     
+    //    MARK: - Conctraints
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             image.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
@@ -104,30 +108,24 @@ import UIKit
             startButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-     func setData(imageName: String, title: String, description: String){
-         self.pageData = (imageName: imageName, title: title, description: description)
-         
-             updateData()
-         }
-     
-     func updateData(){
+    
+    //    MARK: - Actions
+    func setData(imageName: String, title: String, description: String){
+        self.pageData = (imageName: imageName, title: title, description: description)
+        
+        updateData()
+    }
+    
+    func updateData(){
         guard let data = pageData else {return}
         image.image = UIImage(named: data.imageName)
         titleLabel.text = data.title
         descriptionLabel.text = data.description
     }
-     
-     @objc private func startTapped(){
-         UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
-         let loginVC = LoginViewController()
-         guard let window = view.window else { return }
-            view.window?.rootViewController = loginVC
-            view.window?.makeKeyAndVisible()
-         
-         UIView.transition(with: window,
-                           duration: 0.3,
-                           options: .transitionCrossDissolve,
-                           animations: nil)
-     }
+    
+    @objc private func startTapped(){
+        UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+        
+        delegate?.finishOnboarding()
+    }
 }
-

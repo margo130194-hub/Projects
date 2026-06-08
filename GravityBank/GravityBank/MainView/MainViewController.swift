@@ -8,22 +8,31 @@ import UIKit
 
 final class MainViewController: UIViewController {
     
+    static func build() -> UIViewController{
+        let vc = MainViewController()
+        let presenter = MainPresenter()
+        
+        vc.presenter = presenter
+        presenter.view = vc
+        
+        return vc
+    }
+    
+    var presenter: MainPresenterProtocol?
+    
     // MARK: - Subviews
     private let greetingLabel = UILabel()
     private let table = UITableView()
     private var deposit: [Deposit] = []
-    private let networkService = NetworkService.shared
     private let imageBackground = UIImageView()
     
-    // MARK: - Lyfecycles
+    // MARK: - Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewProperties()
         setupSubviews()
         setupConstraints()
-        fetchData()
-        let activeNumber = UserDefaults.standard.string(forKey: "userNumber")
-        showGreeting(for: activeNumber ?? "Гость")
+        presenter?.viewDidLoad()
     }
     
     // MARK: - Layout
@@ -38,7 +47,7 @@ final class MainViewController: UIViewController {
     
     private func setupSubviews() {
         greetingLabel.font = UIFont(name: "FunnelDisplay-Bold", size: 27)
-        greetingLabel.textColor = .white
+        greetingLabel.textColor = UIColor(named: "GravityColor")
         greetingLabel.numberOfLines = 0
         greetingLabel.textAlignment = .center
         greetingLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -61,46 +70,18 @@ final class MainViewController: UIViewController {
             imageBackground.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             imageBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             imageBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            greetingLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
+            greetingLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             greetingLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             greetingLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            table.topAnchor.constraint(equalTo: greetingLabel.bottomAnchor, constant: 30),
+            table.topAnchor.constraint(equalTo: greetingLabel.bottomAnchor, constant: 20),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-   private func showGreeting(for number: String){
-        let defaults = UserDefaults.standard
-        let specificKey = "userName \(number)"
-        if let name = defaults.string(forKey: specificKey){
-            greetingLabel.text = "Привет, \(name)!"
-        } else {
-            greetingLabel.text = "Привет, Гость!"
-        }
-    }
-    
-    private func fetchData(){
-        deposit = []
-        table.reloadData()
-        Task{ [weak self] in
-            guard let self else { return }
-            await fetchDataAsync()}
-    }
-    private func fetchDataAsync() async{
-        do {
-            let fetchedDeposit = try await networkService.fetchDepositAsync()
-            
-            await MainActor.run {
-                deposit = fetchedDeposit
-                table.reloadData()
-            }
-        } catch {
-            print("error \(error)")
-        }
-    }
 }
+// MARK: - Extensions
 
 extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -115,6 +96,15 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
         cell.configure(with: deposit, index: indexPath.row)
         return cell
     }
+}
+
+extension MainViewController: MainViewProtocol{
+    func showDeposit(_ deposits: [Deposit]) {
+        self.deposit = deposits
+        table.reloadData()
     }
-
-
+    
+    func showGreetings(text: String) {
+        greetingLabel.text = text
+    }
+}

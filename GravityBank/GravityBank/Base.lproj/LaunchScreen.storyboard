@@ -16,14 +16,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" fixedFrame="YES" image="space" translatesAutoresizingMaskIntoConstraints="NO" id="3ro-QD-K3A">
-                                <rect key="frame" x="-55" y="-58" width="474" height="969"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" fixedFrame="YES" image="saturn 1" translatesAutoresizingMaskIntoConstraints="NO" id="3ro-QD-K3A">
+                                <rect key="frame" x="-25" y="-58" width="474" height="969"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="saturn" translatesAutoresizingMaskIntoConstraints="NO" id="DaG-rs-zJm">
-                                <rect key="frame" x="21" y="275" width="350" height="303"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                <rect key="contentStretch" x="1" y="1" width="1" height="1"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -36,8 +31,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="saturn" width="588" height="313"/>
-        <image name="space" width="474" height="948"/>
+        <image name="saturn 1" width="800" height="1422"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
