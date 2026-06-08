@@ -297,6 +297,10 @@ final class LoginViewController: UIViewController {
     @objc private func signUpAction(){
         presenter?.signUpAction()
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 //MARK: - Extensions

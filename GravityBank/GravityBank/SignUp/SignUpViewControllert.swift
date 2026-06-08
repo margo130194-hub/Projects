@@ -252,6 +252,10 @@ final class SignUpViewController: UIViewController {
         })
         self.present(alert, animated: true)
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 extension SignUpViewController: UITextFieldDelegate{
