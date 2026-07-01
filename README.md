@@ -35,11 +35,11 @@ This project was developed as part of an iOS development course to practice buil
 
 | Login | Deposits |
 |-------|------|
-| ![](Screenshots/Login.png) | ![](Screenshots/Deposits.png) |
+| ![](GravityBank/Screenshots/Login.png) | ![](GravityBank/Screenshots/Deposits.png) |
 
 | Map | Theme |
 |-------|------|
-| ![](Screenshots/MapAtms.png) | ![](Screenshots/Themes.png) |
+| ![](GravityBank/Screenshots/MapAtms.png) | ![](GravityBank/Screenshots/Themes.png) |
 
 ## Requirements
 
