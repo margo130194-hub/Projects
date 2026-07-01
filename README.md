@@ -33,8 +33,6 @@ This project was developed as part of an iOS development course to practice buil
 
 ## Screenshots
 
-## Screenshots
-
 | Login | Deposits |
 |-------|------|
 | ![](Screenshots/Login.png) | ![](Screenshots/Deposits.png) |
