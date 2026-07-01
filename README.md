@@ -37,11 +37,11 @@ This project was developed as part of an iOS development course to practice buil
 
 | Login | Deposits |
 |-------|------|
-| ![](screenshots/Login.png) | ![](screenshots/Deposits.png) |
+| ![](Screenshots/Login.png) | ![](Screenshots/Deposits.png) |
 
 | Map | Theme |
 |-------|------|
-| ![](screenshots/MapAtms.png) | ![](screenshots/Themes.png) |
+| ![](Screenshots/MapAtms.png) | ![](Screenshots/Themes.png) |
 
 ## Requirements
 
