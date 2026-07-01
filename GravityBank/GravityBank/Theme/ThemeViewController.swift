@@ -62,7 +62,7 @@ final class ThemeViewController: UIViewController{
     
     private func setupSubviews() {
         // MARK: - View
-        conteinerView.backgroundColor = UIColor(named: "blue")?.withAlphaComponent(0.7)
+        conteinerView.backgroundColor = UIColor(named: "myBlue")?.withAlphaComponent(0.7)
         conteinerView.layer.borderWidth = 0.5
         conteinerView.layer.cornerRadius = 10
         conteinerView.layer.borderColor = UIColor(named: "GravityColor")?.withAlphaComponent(0.5).cgColor
@@ -93,7 +93,7 @@ final class ThemeViewController: UIViewController{
         
         // MARK: - Switch
         [systemSwitch, darkSwitch].forEach{
-            $0.onTintColor = UIColor(named: "blue")
+            $0.onTintColor = UIColor(named: "myBlue")
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         systemSwitch.addTarget(self, action: #selector(systemTheme), for: .valueChanged)

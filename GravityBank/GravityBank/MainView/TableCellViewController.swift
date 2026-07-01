@@ -50,7 +50,7 @@ class TableCell: UITableViewCell {
     private  func setupSubview(){
         
         //   MARK: - View & Stack
-        conteinerView.backgroundColor = UIColor(named: "blue")?.withAlphaComponent(0.7)
+        conteinerView.backgroundColor = UIColor(named: "myBlue")?.withAlphaComponent(0.7)
         conteinerView.layer.borderWidth = 0.5
         conteinerView.layer.cornerRadius = 10
         conteinerView.layer.borderColor = UIColor(named: "GravityColor")?.withAlphaComponent(0.5).cgColor
