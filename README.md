@@ -1,6 +1,6 @@
 # Gravity Bank
 
-Gravity Bank is a learning iOS application that simulates a mobile banking experience. The project was created to practice iOS development using UIKit, MVVM architecture, and REST API integration.
+Gravity Bank is a learning iOS application that simulates a mobile banking experience. The project was created to practice iOS development using UIKit, MVP architecture, and REST API integration.
 
 ## Features
 
